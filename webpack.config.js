@@ -5,7 +5,7 @@ module.exports = {
   entry: {
     about: './src/about.js',
     contact: './src/contact.js',
-    home: './src/home.js',
+    homePage: './src/homePage.js',
   },
   devtool: 'inline-source-map',
   devServer: {
