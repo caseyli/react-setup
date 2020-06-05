@@ -1,48 +1,64 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import $ from 'jquery';
+
+import PantoneColor from './pantoneColor';
 
 class HomePage extends React.Component {
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			numberOfClicks: 0,
+			loading: true,
+			pantoneColors: [],
 		};
 
-		this.handleIncrementLinkClicked = this.handleIncrementLinkClicked.bind(this);
+		this.loadPantoneColors = this.loadPantoneColors.bind(this);
 	}
 
-	handleIncrementLinkClicked(event) {
-		event.preventDefault();
+	componentDidMount() {
+		this.loadPantoneColors();
+	}
 
-		const numberOfClicks = this.state.numberOfClicks;
-		this.setState({ numberOfClicks: numberOfClicks + 1 });
+	loadPantoneColors() {
+		$.ajax({
+			url: 'https://reqres.in/api/colors?delay=2',
+			type: 'GET',
+			dataType: 'JSON',
+			success: (response) => {
+				const pantoneColors = response.data;
+				this.setState({ pantoneColors, loading: false });
+			},
+			error: () => {
+				debugger
+			}
+		});
 	}
 
 	render() {
 		return (
-			<div>
-        <a href="home.html">Home</a>
-				<a href="about.html">About</a>
-				<a href="contact.html">Contact</a>
+			<div className='component-home-page'>
+				<h1>Pantone Colors</h1>
 
-				<div>
-					<h1>{this.props.title}</h1>
-				</div>
-
-				<a href='#' onClick={this.handleIncrementLinkClicked}>
-					Click here to increment counter
-				</a>
-
-				<div className={(this.state.numberOfClicks > 10) ? 'counter-blurb hot' : 'counter-blurb'}>
-					The counter is currently at {this.state.numberOfClicks}
-				</div>
-			</div>
-			
+				{
+					this.state.loading ? 
+						<div>Loading...</div> 
+					: 
+						<div className='colors'>
+							{
+								this.state.pantoneColors.map((pantoneColor) => {
+									return (
+										<PantoneColor key={pantoneColor.id} pantoneColor={pantoneColor} />
+									);
+								})
+							}
+						</div>
+				}
+			</div>			
 		);
 	}
 }
 
-const element = document.getElementById('alert-link-mount-point');
-ReactDOM.render(<HomePage title='Home Page Clicks' />, element);
+const element = document.getElementById('home-page-mount-point');
+ReactDOM.render(<HomePage />, element);
 
